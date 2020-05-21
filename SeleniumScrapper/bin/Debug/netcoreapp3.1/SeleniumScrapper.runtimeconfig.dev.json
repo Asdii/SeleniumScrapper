@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\Gnar\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\Gnar\\.nuget\\packages"
+    ]
+  }
+}

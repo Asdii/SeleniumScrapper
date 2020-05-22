@@ -3,6 +3,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace SeleniumScrapper
@@ -11,6 +12,13 @@ namespace SeleniumScrapper
     {
         static void Main(string[] args)
         {
+            String[] instrucciones = new string[4] {
+                "Inicie sesión con sus credenciales, luego dirigase a Alumnos>Ficha alumno y espere a que cargue.",
+                "Seleccione los parámetros para 'Tipos de enseñanza', 'Grados' y 'Cursos'.",
+                "Haga click en 'Buscar'",
+                "Inicie sesión con sus credenciales, espere a que cargue la página y presione una tecla para continuar."
+            };
+
             Thread.Sleep(500);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Thread.Sleep(500);
@@ -39,7 +47,8 @@ namespace SeleniumScrapper
             Thread.Sleep(500);
             IWait<IWebDriver> wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30.00));
             Thread.Sleep(500);
-            bool inicioSesion = false;
+            bool inicioSesionNapsis = false;
+            bool inicioSesionSige = false;
 
             do
             {
@@ -55,23 +64,28 @@ namespace SeleniumScrapper
 
                 opcion = Console.ReadKey().KeyChar;
 
+
+                var archivosTxt = Directory.EnumerateFiles("C:/Alumnos/", "*.txt");
+
                 switch (opcion)
                 {
                     case '1':
-                        if (!inicioSesion)
+                        if (!inicioSesionNapsis)
                         {
                             driver.Url = "https://napsis.com/ingresar/";
-                            Instrucciones(1, false);
+                            CWInstrucciones();
+                            Console.WriteLine(instrucciones[0]);
                             Console.ReadKey();
-                            inicioSesion = true;
+                            inicioSesionNapsis = true;
                         }
                         
                         driver.Url = "http://ncore.napsis.cl/fichaalumno/ficha-alumno";
-                        Instrucciones(2, true);
-                        Instrucciones(3, true);
+                        CWInstrucciones();
+                        Console.WriteLine(instrucciones[1]);
+                        Console.WriteLine(instrucciones[2]);
                         Console.WriteLine("");
                         Console.WriteLine("Presione una tecla para continuar.");
-                        Console.ReadLine();
+                        Console.ReadKey();
 
                         int total = Convert.ToInt32(driver.ExecuteScript("return document.querySelector('#tabla_listado_alumnos > tbody').rows.length"));
 
@@ -82,6 +96,7 @@ namespace SeleniumScrapper
                         string rutF, nombreF, apaternoF, amaternoF, fechanacF, direcF, comunaF, sexoF, telefonoF, celularF, nacionalidadF, parentescoF;
                         int cantidadFamiliares;
                         string path;
+
 
                         for (int alumnos = 1; alumnos <= total; alumnos++)
                         {
@@ -169,7 +184,7 @@ namespace SeleniumScrapper
                                             break;
                                     }
 
-                                    path = @"c:\Alumnos\F"+ familiar + " " + rut + ".txt";
+                                    path = @"c:\Alumnos\F" + familiar + " " + rut + ".txt";
                                     if (!File.Exists(path))
                                     {
                                         using (StreamWriter sw = File.CreateText(path))
@@ -219,8 +234,146 @@ namespace SeleniumScrapper
                         }
                         break;
                     case '2':
+
+                        if (archivosTxt.Count() > 0) //if existe más de un archivo en C:/Alumnos
+                        {
+                            if (!inicioSesionSige)
+                            {
+                                driver.Url = "https://sige.mineduc.cl/Sige/Login";
+                                CWInstrucciones();
+                                Console.WriteLine(instrucciones[3]);
+                                Console.ReadKey();
+                                inicioSesionSige = true;
+                            }
+
+                            wait.Until(ExpectedConditions.ElementExists(By.ClassName("ui-icon ui-icon-closethick")));
+                            driver.ExecuteScript("document.getElementsByTagName('a')[20].click();");
+                            driver.ExecuteScript("document.getElementsByTagName('a')[5].click();");
+
+                            Console.WriteLine("");
+                            Console.WriteLine("Este proceso ingresará toda la información almacenada en C:/Alumnos utilizando su cuenta.");
+                            Console.WriteLine("Si está seguro de continuar, presione una tecla. Sino, cierre esta ventana.");
+                            Console.ReadKey();
+
+                            
+                        }
+                        else
+                        {
+                            Console.WriteLine("No existen archivos para copiar a SIGE");
+                            Console.WriteLine("Oprima una tecla para volver al menú.");
+                            Console.ReadKey();
+                        }
                         break;
                     case '3':
+                        String[] texto;
+                        Console.WriteLine("");
+                        foreach (string archivo in archivosTxt)
+                        {
+                            texto = File.ReadAllLines(archivo);
+                            int contador = 0;
+
+                            if (archivo.Contains("F"))
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("--- Familiar " + texto[1] + " (" + archivo + ") ---");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                foreach (string linea in texto)
+                                {
+                                    switch (contador)
+                                    {
+                                        case 0:
+                                            Console.WriteLine("Rut:           " + linea);
+                                            break;
+                                        case 1:
+                                            Console.WriteLine("Nombres:       " + linea);
+                                            break;
+                                        case 2:
+                                            Console.WriteLine("A. Paterno:    " + linea);
+                                            break;
+                                        case 3:
+                                            Console.WriteLine("A. Materno:    " + linea);
+                                            break;
+                                        case 4:
+                                            Console.WriteLine("F. Nacimiento: " + linea);
+                                            break;
+                                        case 5:
+                                            Console.WriteLine("Dirección:     " + linea);
+                                            break;
+                                        case 6:
+                                            Console.WriteLine("Comuna:        " + linea);
+                                            break;
+                                        case 7:
+                                            Console.WriteLine("Sexo:          " + linea);
+                                            break;
+                                        case 8:
+                                            Console.WriteLine("Celular:       " + linea);
+                                            break;
+                                        case 9:
+                                            Console.WriteLine("Telefono:      " + linea);
+                                            break;
+                                        case 10:
+                                            Console.WriteLine("Nacionalidad:  " + linea);
+                                            break;
+                                        case 11:
+                                            Console.WriteLine("Parentesco:    " + linea);
+                                            break;
+                                    }
+                                    contador++;
+                                }
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("--- Alumno " + texto[1] + " ---");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                foreach (string linea in texto)
+                                {
+                                    switch (contador)
+                                    {
+                                        case 0:
+                                            Console.WriteLine("Rut:           " + linea);
+                                            break;
+                                        case 1:
+                                            Console.WriteLine("Nombres:       " + linea);
+                                            break;
+                                        case 2:
+                                            Console.WriteLine("A. Paterno:    " + linea);
+                                            break;
+                                        case 3:
+                                            Console.WriteLine("A. Materno:    " + linea);
+                                            break;
+                                        case 4:
+                                            Console.WriteLine("F. Nacimiento: " + linea);
+                                            break;
+                                        case 5:
+                                            Console.WriteLine("Dirección:     " + linea);
+                                            break;
+                                        case 6:
+                                            Console.WriteLine("Comuna:        " + linea);
+                                            break;
+                                        case 7:
+                                            Console.WriteLine("Sexo:          " + linea);
+                                            break;
+                                        case 8:
+                                            Console.WriteLine("Celular:       " + linea);
+                                            break;
+                                        case 9:
+                                            Console.WriteLine("Nacionalidad:  " + linea);
+                                            break;
+                                        case 10:
+                                            Console.WriteLine("C. Familiares: " + linea);
+                                            break;
+                                    }
+                                    contador++;
+                                }
+                            }
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("---------------------------");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.WriteLine("");
+                        }
+                        Console.WriteLine("Oprima una tecla para volver al menú.");
+                        Console.ReadKey();
                         break;
                     case '4':
                         break;
@@ -233,28 +386,12 @@ namespace SeleniumScrapper
             } while (opcion != '5');
         }
 
-        private static void Instrucciones(int paso, bool unico)
+        private static void CWInstrucciones()
         {
-            String[] instrucciones = new string[3] { 
-                "Inicie sesión con sus credenciales, luego dirigase a Alumnos>Ficha alumno y espere a que cargue.", 
-                "Seleccione los parámetros para 'Tipos de enseñanza', 'Grados' y 'Cursos'.",
-                "Haga click en 'Buscar'"
-            };
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Instrucciones:");
             Console.ForegroundColor = ConsoleColor.Yellow;
-            if (unico)
-            {
-                Console.WriteLine(instrucciones[paso-1]);
-            }
-            else
-            {
-                for (int i = 0; i <= paso-1; i++)
-                {
-                    Console.WriteLine(instrucciones[i]);
-                }
-            }
         }
 
     }

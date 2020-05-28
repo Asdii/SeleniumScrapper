@@ -1,5 +1,4 @@
 C:\Users\Gnar\source\repos\SeleniumScrapper\SeleniumScrapper\bin\Debug\netcoreapp3.1\SeleniumScrapper.exe
-C:\Users\Gnar\source\repos\SeleniumScrapper\SeleniumScrapper\obj\Debug\netcoreapp3.1\SeleniumScrapper.csprojAssemblyReference.cache
 C:\Users\Gnar\source\repos\SeleniumScrapper\SeleniumScrapper\obj\Debug\netcoreapp3.1\SeleniumScrapper.AssemblyInfoInputs.cache
 C:\Users\Gnar\source\repos\SeleniumScrapper\SeleniumScrapper\obj\Debug\netcoreapp3.1\SeleniumScrapper.AssemblyInfo.cs
 C:\Users\Gnar\source\repos\SeleniumScrapper\SeleniumScrapper\bin\Debug\netcoreapp3.1\SeleniumScrapper.deps.json
@@ -15,3 +14,4 @@ C:\Users\Gnar\source\repos\SeleniumScrapper\SeleniumScrapper\obj\Debug\netcoreap
 C:\Users\Gnar\source\repos\SeleniumScrapper\SeleniumScrapper\obj\Debug\netcoreapp3.1\SeleniumScrapper.genruntimeconfig.cache
 C:\Users\Gnar\source\repos\SeleniumScrapper\SeleniumScrapper\bin\Debug\netcoreapp3.1\WebDriver.Support.dll
 C:\Users\Gnar\source\repos\SeleniumScrapper\SeleniumScrapper\obj\Debug\netcoreapp3.1\SeleniumScrapper.csproj.CoreCompileInputs.cache
+C:\Users\Gnar\source\repos\SeleniumScrapper\SeleniumScrapper\obj\Debug\netcoreapp3.1\SeleniumScrapper.csprojAssemblyReference.cache
